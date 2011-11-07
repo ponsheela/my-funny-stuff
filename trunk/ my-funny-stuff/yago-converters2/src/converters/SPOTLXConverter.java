@@ -579,7 +579,7 @@ public class SPOTLXConverter extends Converter {
 	}
 	
 	public void testInsert() throws Exception {
-		File file = new File(Parameters.get(""));
+		File file = new File(outputFolder.getName() + File.separator + "type.tsv");
 		getParameters();
 		getExtendedParameters();
 		getDatabaseParameters();
