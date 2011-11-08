@@ -220,7 +220,7 @@ public class SPOTLXConverter extends Converter {
 		String targetUser = Parameters.get("databaseUser");
 		String targetPW = Parameters.get("databasePassword");
 		
-		String targetUrl = "jdbc:mysql://" + targetHost + targetPort + "/" + (targetDatabase == null ? "" : "/" + targetDatabase);
+		String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
 		targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);
 		
 		// configure Berkeley database environment (should be passed as a parameter)
@@ -599,10 +599,6 @@ public class SPOTLXConverter extends Converter {
 	public static void main(String[] args) throws Exception {
 		File iniFile = new File(args == null || args.length == 0 || "test".equals(args[0]) ? "yago.ini" : args[0]);
 		Config.init(iniFile);
-		if ("test".equals(args[0]))
-			new SPOTLXConverter().testInsert();
-		else
-			new SPOTLXConverter().run();
-		
+		new SPOTLXConverter().run();
 	}
 }
