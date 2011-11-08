@@ -101,7 +101,7 @@ public class SPOTLXConverter extends Converter {
 		for (String l : new FileLines(new File(yagoFolder, "hasGeoCoordinates.tsv"), "Initializing geo-coordinates")) {
 			String[] data = l.split("\t");
 			String entity = data[1];
-			String geoCoordinates = data[2];
+			String geoCoordinates = data[2].substring(1, data[2].length() - 1);
 			int pos = geoCoordinates.indexOf('/');
 			double lat = Double.parseDouble(geoCoordinates.substring(0, pos));
 			double lon = Double.parseDouble(geoCoordinates.substring(pos + 1, geoCoordinates.length()));
@@ -305,11 +305,11 @@ public class SPOTLXConverter extends Converter {
 		computeStatistics();
 		Announce.done();
 		
-		Announce.doing("Creating Indexes");
+		/*Announce.doing("Creating Indexes");
 		createIndexes(targetUrl, targetUser, targetPW);
 		Announce.done();
 		
-		Announce.done();
+		Announce.done();*/
 	}
 	
 	private void createIndexes(String targetUrl, String targetUser, String targetPW) throws SQLException {
