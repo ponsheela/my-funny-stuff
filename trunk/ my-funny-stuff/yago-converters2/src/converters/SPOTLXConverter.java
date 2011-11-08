@@ -545,7 +545,7 @@ public class SPOTLXConverter extends Converter {
 			pstmtInsertRelationalFact.executeBatch();
 			//      logger.info(batchCount + " de-reified facts inserted");
 		} catch (SQLException sqle) {
-			sqle.getNextException().printStackTrace();
+			sqle.printStackTrace();
 			throw new RuntimeException(sqle);
 		}
 	}
