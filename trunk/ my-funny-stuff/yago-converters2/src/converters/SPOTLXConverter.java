@@ -256,12 +256,12 @@ public class SPOTLXConverter extends Converter {
 		Announce.doing("Creating table with following statement: " + "CREATE TABLE relationalfacts "
 				+ "( id VARCHAR(255) NOT NULL, relation VARCHAR(255) NOT NULL, arg1 VARCHAR(255) NOT NULL, "
 				+ "arg2 VARCHAR(255) NOT NULL, timeBegin TIMESTAMP, timeEnd TIMESTAMP, "
-				+ "location VARCHAR(255), locationLatitude FLOAT, locationLongitude FLOAT, primaryWitness VARCHAR, context VARCHAR)");
+				+ "location VARCHAR(255), locationLatitude FLOAT, locationLongitude FLOAT, primaryWitness VARCHAR(255), context VARCHAR(255)");
 		
-		executeSQLUpdate("CREATE TABLE relationalfacts ( id VARCHAR(255) NOT NULL, "
+		/*executeSQLUpdate("CREATE TABLE relationalfacts ( id VARCHAR(255) NOT NULL, "
 				+ "relation VARCHAR(255) NOT NULL, arg1 VARCHAR(255) NOT NULL, arg2 VARCHAR(255) NOT NULL, "
 				+ "timeBegin TIMESTAMP, timeEnd TIMESTAMP, location VARCHAR(255), " 
-				+	"locationLatitude FLOAT, locationLongitude FLOAT, primaryWitness VARCHAR, context VARCHAR)");
+				+	"locationLatitude FLOAT, locationLongitude FLOAT, primaryWitness VARCHAR, context VARCHAR)");*/
 		
 		Announce.done();
 		
@@ -278,36 +278,38 @@ public class SPOTLXConverter extends Converter {
 		// Perform one pass over facts and de-reify them
 		//
 		Announce.doing("Inserting facts");
-		for (File f : yagoFolder.listFiles())
+		for (File f : yagoFolder.listFiles()) {
 			loadFactsFrom(f);
-				Announce.done();
-				
-				// process last batch
-				execute();
-				
-				geolocationsDB.close();
-				locationsDB.close();
-				timeIntervalsDB.close();
-				witnessesDB.close();
-				contextsDB.close();
-				dbEnv.close();
-				
-				// empty tempDir
-				for (File f : tempDir.listFiles()) {
-					f.delete();
-				}
-				
-				pstmtInsertRelationalFact.close();
-				
-				Announce.doing("Computing Statistics");
-				computeStatistics();
-				Announce.done();
-				
-				Announce.doing("Creating Indexes");
-				createIndexes(targetUrl, targetUser, targetPW);
-				Announce.done();
-				
-				Announce.done();
+		}		
+		Announce.done();
+		
+		// process last batch
+		refreschConnection();
+		execute();
+		
+		geolocationsDB.close();
+		locationsDB.close();
+		timeIntervalsDB.close();
+		witnessesDB.close();
+		contextsDB.close();
+		dbEnv.close();
+		
+		// empty tempDir
+		for (File f : tempDir.listFiles()) {
+			f.delete();
+		}
+		
+		pstmtInsertRelationalFact.close();
+		
+		Announce.doing("Computing Statistics");
+		computeStatistics();
+		Announce.done();
+		
+		Announce.doing("Creating Indexes");
+		createIndexes(targetUrl, targetUser, targetPW);
+		Announce.done();
+		
+		Announce.done();
 	}
 	
 	private void createIndexes(String targetUrl, String targetUser, String targetPW) throws SQLException {
@@ -461,19 +463,19 @@ public class SPOTLXConverter extends Converter {
 	}
 	
 	private void refreschConnection() throws SQLException {
-	// if the connection is closed, re-open it
-			if (targetConn == null || targetConn.isClosed()) {
-				D.pl("Connection is closed. Re-establishing it....");
-				String targetHost = Parameters.get("databaseHost");
-				String targetPort = ":3306";
-				String targetDatabase = Parameters.get("databaseDatabase");
-				String targetUser = Parameters.get("databaseUser");
-				String targetPW = Parameters.get("databasePassword");
-				
-				String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
-				targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);
-				D.pl("Connection re-established successfully");
-			}
+		// if the connection is closed, re-open it
+		if (targetConn == null || targetConn.isClosed()) {
+			D.pl("Connection is closed. Re-establishing it....");
+			String targetHost = Parameters.get("databaseHost");
+			String targetPort = ":3306";
+			String targetDatabase = Parameters.get("databaseDatabase");
+			String targetUser = Parameters.get("databaseUser");
+			String targetPW = Parameters.get("databasePassword");
+			
+			String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
+			targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);
+			D.pl("Connection re-established successfully");
+		}
 	}
 	
 	/** Adds relational (i.e., de-reified fact) to batch */
