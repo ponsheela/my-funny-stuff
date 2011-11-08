@@ -244,13 +244,13 @@ public class SPOTLXConverter extends Converter {
 		geolocations = new StoredMap<String, GeoLocation>(geolocationsDB, sb, new LocationBinding(), true);
 		locationsDB = dbEnv.openDatabase(null, "locations", dbConfig);
 		locations = new StoredMap<String, String>(locationsDB, sb, sb, true);
-		timeIntervalsDB = dbEnv.openDatabase(null, "timeintervals", dbConfig);
+		timeIntervalsDB = dbEnv.openDatabase(null, "timeintervals", dbConfig);		
 		timeIntervals = new StoredMap<String, TimeInterval>(timeIntervalsDB, sb, new TimeIntervalBinding(), true);
 		witnessesDB = dbEnv.openDatabase(null, "witnesses", dbConfig);
 		witnesses = new StoredMap<String, String>(witnessesDB, sb, sb, true);
 		contextsDB = dbEnv.openDatabase(null, "contexts", dbConfig);
-		contexts = new StoredMap<String, String>(contextsDB, sb, sb, true);
-		
+		contexts = new StoredMap<String, String>(contextsDB, sb, sb, true);		
+				
 		Announce.doing("Creating table with following statement: " + "CREATE TABLE relationalfacts "
 				+ "( id VARCHAR(255) NOT NULL, relation VARCHAR(255) NOT NULL, arg1 VARCHAR(255) NOT NULL, "
 				+ "arg2 VARCHAR(255) NOT NULL, timeBegin TIMESTAMP, timeEnd TIMESTAMP, "
