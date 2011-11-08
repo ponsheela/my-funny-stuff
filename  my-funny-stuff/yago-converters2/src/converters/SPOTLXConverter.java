@@ -251,8 +251,6 @@ public class SPOTLXConverter extends Converter {
 		contextsDB = dbEnv.openDatabase(null, "contexts", dbConfig);
 		contexts = new StoredMap<String, String>(contextsDB, sb, sb, true);
 		
-		pstmtInsertRelationalFact = targetConn.prepareStatement(insertRelationalFact);
-		
 		Announce.doing("Creating table with following statement: " + "CREATE TABLE relationalfacts "
 				+ "( id VARCHAR(255) NOT NULL, relation VARCHAR(255) NOT NULL, arg1 VARCHAR(255) NOT NULL, "
 				+ "arg2 VARCHAR(255) NOT NULL, timeBegin TIMESTAMP, timeEnd TIMESTAMP, "
@@ -278,6 +276,9 @@ public class SPOTLXConverter extends Converter {
 		// Perform one pass over facts and de-reify them
 		//
 		Announce.doing("Inserting facts");
+		
+		pstmtInsertRelationalFact = targetConn.prepareStatement(insertRelationalFact);
+		
 		for (File f : yagoFolder.listFiles()) {
 			loadFactsFrom(f);
 		}		
