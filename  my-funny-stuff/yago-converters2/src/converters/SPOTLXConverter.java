@@ -428,7 +428,7 @@ public class SPOTLXConverter extends Converter {
 			String targetUser = Parameters.get("databaseUser");
 			String targetPW = Parameters.get("databasePassword");
 			
-			String targetUrl = "jdbc:mysql://" + targetHost + targetPort + "/" + (targetDatabase == null ? "" : "/" + targetDatabase);
+			String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
 			targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);
 			D.pl("Connection re-established successfully");
 		}
@@ -579,7 +579,7 @@ public class SPOTLXConverter extends Converter {
 	}
 	
 	public void testInsert() throws Exception {
-		File file = new File(outputFolder.getName() + File.separator + "type.tsv");
+		File file = new File("../yago2_data/type.tsv");
 		getParameters();
 		getExtendedParameters();
 		getDatabaseParameters();
