@@ -98,6 +98,9 @@ public class SPOTLXConverter extends Converter {
 	 * @throws IOException 
 	 * @throws NumberFormatException */
 	private void initializeGeoLocations() throws NumberFormatException, IOException {
+		
+		Announce.doing("Initializing geoLocations......");
+		
 		for (String l : new FileLines(new File(yagoFolder, "hasGeoCoordinates.tsv"), "Initializing geo-coordinates")) {
 			String[] data = l.split("\t");
 			String entity = data[1];
@@ -105,9 +108,16 @@ public class SPOTLXConverter extends Converter {
 			int pos = geoCoordinates.indexOf('/');
 			double lat = Double.parseDouble(geoCoordinates.substring(0, pos));
 			double lon = Double.parseDouble(geoCoordinates.substring(pos + 1, geoCoordinates.length()));
+			if (geolocations.containsKey(entity)) {
+				D.pl("Found");
+				System.exit(0);
+			}
+			else System.exit(0);
 			geolocations.put(entity, new GeoLocation(lat, lon));
 		}
 		Announce.message(geolocations.size() + " geolocations (i.e., entities with known latitude and longitude)");
+		
+		Announce.done();
 	}
 	
 	/** Initializes locations associated with facts 
@@ -207,12 +217,12 @@ public class SPOTLXConverter extends Converter {
 		getExtendedParameters();
 		getDatabaseParameters();
 		
-		Announce.doing("Writing to Database");
+		Announce.doing("Writing to Database for the n-time");
 		
 		// load MySQL driver
 		Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
 		DriverManager.registerDriver(driver);
-		
+				
 		// source database connection
 		String targetHost = Parameters.get("databaseHost");
 		String targetPort = ":3306";
@@ -222,7 +232,7 @@ public class SPOTLXConverter extends Converter {
 		
 		String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
 		targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);
-		
+				
 		// configure Berkeley database environment (should be passed as a parameter)
 		EnvironmentConfig envConfig = new EnvironmentConfig();
 		envConfig.setAllowCreate(true);
@@ -230,25 +240,35 @@ public class SPOTLXConverter extends Converter {
 		envConfig.setTransactional(false);
 		//            envConfig.setCacheSize(1024 * 1024 * 1024); // use 1G of memory
 		envConfig.setCachePercent(50);
-		
+				
 		File tempDir = outputFolder;
 		
 		// initialize mappings
 		StringBinding sb = (StringBinding) TupleBinding.getPrimitiveBinding(String.class);
+		
+		Announce.doing("Creating an environment for the meta-datastore");		
 		dbEnv = new Environment(tempDir, envConfig);
+		Announce.done();
+		
 		DatabaseConfig dbConfig = new DatabaseConfig();
 		dbConfig.setAllowCreate(true);
 		dbConfig.setReadOnly(false);
 		dbConfig.setTransactional(false);
+		Announce.message("on processing the meta databases...");
 		geolocationsDB = dbEnv.openDatabase(null, "geolocations", dbConfig);
-		geolocations = new StoredMap<String, GeoLocation>(geolocationsDB, sb, new LocationBinding(), true);
+		Announce.message("on processing the gelocation...");
+		geolocations = new StoredMap<String, GeoLocation>(geolocationsDB, sb, new LocationBinding(), true);		
 		locationsDB = dbEnv.openDatabase(null, "locations", dbConfig);
+		Announce.message("on processing the locations...");
 		locations = new StoredMap<String, String>(locationsDB, sb, sb, true);
-		timeIntervalsDB = dbEnv.openDatabase(null, "timeintervals", dbConfig);		
+		timeIntervalsDB = dbEnv.openDatabase(null, "timeintervals", dbConfig);
+		Announce.message("on processing the timeInterval...");
 		timeIntervals = new StoredMap<String, TimeInterval>(timeIntervalsDB, sb, new TimeIntervalBinding(), true);
 		witnessesDB = dbEnv.openDatabase(null, "witnesses", dbConfig);
+		Announce.message("on processing the witness...");
 		witnesses = new StoredMap<String, String>(witnessesDB, sb, sb, true);
 		contextsDB = dbEnv.openDatabase(null, "contexts", dbConfig);
+		Announce.message("on processing the context...");
 		contexts = new StoredMap<String, String>(contextsDB, sb, sb, true);		
 				
 		Announce.doing("Creating table with following statement: " + "CREATE TABLE relationalfacts "
