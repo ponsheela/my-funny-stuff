@@ -108,11 +108,6 @@ public class SPOTLXConverter extends Converter {
 			int pos = geoCoordinates.indexOf('/');
 			double lat = Double.parseDouble(geoCoordinates.substring(0, pos));
 			double lon = Double.parseDouble(geoCoordinates.substring(pos + 1, geoCoordinates.length()));
-			if (geolocations.containsKey(entity)) {
-				D.pl("Found");
-				System.exit(0);
-			}
-			else System.exit(0);
 			geolocations.put(entity, new GeoLocation(lat, lon));
 		}
 		Announce.message(geolocations.size() + " geolocations (i.e., entities with known latitude and longitude)");
@@ -229,9 +224,6 @@ public class SPOTLXConverter extends Converter {
 		String targetDatabase = Parameters.get("databaseDatabase");
 		String targetUser = Parameters.get("databaseUser");
 		String targetPW = Parameters.get("databasePassword");
-		
-		String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
-		targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);
 				
 		// configure Berkeley database environment (should be passed as a parameter)
 		EnvironmentConfig envConfig = new EnvironmentConfig();
@@ -270,7 +262,19 @@ public class SPOTLXConverter extends Converter {
 		contextsDB = dbEnv.openDatabase(null, "contexts", dbConfig);
 		Announce.message("on processing the context...");
 		contexts = new StoredMap<String, String>(contextsDB, sb, sb, true);		
-				
+						
+		//
+		// Initialize locations, time intervals, primary witnesses, and contexts
+		//
+		/*initializeGeoLocations();
+		initializeLocations();
+		initializeTimeIntervals();
+		initializeWitnesses();
+		initializeContexts();*/
+		
+		//
+		// Perform one pass over facts and de-reify them
+		//
 		Announce.doing("Creating table with following statement: " + "CREATE TABLE relationalfacts "
 				+ "( id VARCHAR(255) NOT NULL, relation VARCHAR(255) NOT NULL, arg1 VARCHAR(255) NOT NULL, "
 				+ "arg2 VARCHAR(255) NOT NULL, timeBegin TIMESTAMP, timeEnd TIMESTAMP, "
@@ -279,24 +283,14 @@ public class SPOTLXConverter extends Converter {
 		/*executeSQLUpdate("CREATE TABLE relationalfacts ( id VARCHAR(255) NOT NULL, "
 				+ "relation VARCHAR(255) NOT NULL, arg1 VARCHAR(255) NOT NULL, arg2 VARCHAR(255) NOT NULL, "
 				+ "timeBegin TIMESTAMP, timeEnd TIMESTAMP, location VARCHAR(255), " 
-				+	"locationLatitude FLOAT, locationLongitude FLOAT, primaryWitness VARCHAR, context VARCHAR)");*/
+				+	"locationLatitude FLOAT, locationLongitude FLOAT, primaryWitness VARCHAR, context VARCHAR)");*/		
 		
 		Announce.done();
 		
-		//
-		// Initialize locations, time intervals, primary witnesses, and contexts
-		//
-		initializeGeoLocations();
-		initializeLocations();
-		initializeTimeIntervals();
-		initializeWitnesses();
-		initializeContexts();
-		
-		//
-		// Perform one pass over facts and de-reify them
-		//
 		Announce.doing("Inserting facts");
-		
+				
+		String targetUrl = "jdbc:mysql://" + targetHost + targetPort + (targetDatabase == null ? "" : "/" + targetDatabase);
+		targetConn = DriverManager.getConnection(targetUrl, targetUser, targetPW);		
 		pstmtInsertRelationalFact = targetConn.prepareStatement(insertRelationalFact);
 		
 		for (File f : yagoFolder.listFiles()) {
