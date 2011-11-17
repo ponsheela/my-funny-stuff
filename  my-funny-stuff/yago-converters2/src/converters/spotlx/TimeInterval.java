@@ -9,9 +9,13 @@ package converters.spotlx;
  */
 public class TimeInterval {
 
-    public static final long MIN_TIMESTAMP = -210866889600000L;
+    //public static final long MIN_TIMESTAMP = -210866889600000L;   // In Postgres
+	
+	  public static final long MIN_TIMESTAMP = 0L;   // In MySQL
 
-    public static final long MAX_TIMESTAMP = 884541340800000L;
+    //public static final long MAX_TIMESTAMP = 884541340800000L; // In Postgres
+ 
+	  public static final long MAX_TIMESTAMP = 884541340800000L; // In Postgres
 
     public long begin;
 
