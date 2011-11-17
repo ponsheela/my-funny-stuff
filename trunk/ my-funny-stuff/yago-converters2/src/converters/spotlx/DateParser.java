@@ -1,6 +1,7 @@
 
 package converters.spotlx;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -16,6 +17,8 @@ public class DateParser {
     private static final Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
 
     private static final Pattern pattern = Pattern.compile("[-]?[0-9]+[0-9#]{0,3}\\-[0-1#][0-9#]-[0-3#][0-9#]");
+    
+    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static long floorDate(String date) {
         long ms = TimeInterval.MIN_TIMESTAMP;
@@ -110,5 +113,9 @@ public class DateParser {
       }
       
       return false;
+    }
+    
+    public static String epochToString(long timestamp) {
+    	return format.format(new java.sql.Timestamp (timestamp*1000));
     }
 }

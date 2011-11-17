@@ -505,19 +505,26 @@ public class SPOTLXConverter extends Converter {
 			// insert time interval -- only valid ones
 			if (timeBegin <= timeEnd) {
 				if (TimeInterval.MIN_TIMESTAMP < timeBegin && timeBegin < TimeInterval.MAX_TIMESTAMP) {
-					pstmtInsertRelationalFact.setTimestamp(5, new Timestamp(timeBegin), cal);
+					//pstmtInsertRelationalFact.setTimestamp(5, new Timestamp(timeBegin), cal);
+					pstmtInsertRelationalFact.setString(5, DateParser.epochToString(timeBegin));
 				} else {
-					pstmtInsertRelationalFact.setNull(5, Types.TIMESTAMP);
+					//pstmtInsertRelationalFact.setNull(5, Types.TIMESTAMP);
+					pstmtInsertRelationalFact.setNull(5, Types.VARCHAR);
 				}
 				
 				if (TimeInterval.MIN_TIMESTAMP < timeEnd && timeEnd < TimeInterval.MAX_TIMESTAMP) {
-					pstmtInsertRelationalFact.setTimestamp(6, new Timestamp(timeEnd), cal);
+					//pstmtInsertRelationalFact.setTimestamp(6, new Timestamp(timeEnd), cal);
+					pstmtInsertRelationalFact.setString(6, DateParser.epochToString(timeEnd));
 				} else {
-					pstmtInsertRelationalFact.setNull(6, Types.TIMESTAMP);
+					//pstmtInsertRelationalFact.setNull(6, Types.TIMESTAMP);
+					pstmtInsertRelationalFact.setNull(6, Types.VARCHAR);
 				}
 			} else {
-				pstmtInsertRelationalFact.setNull(5, Types.TIMESTAMP);
-				pstmtInsertRelationalFact.setNull(6, Types.TIMESTAMP);
+				//pstmtInsertRelationalFact.setNull(5, Types.TIMESTAMP);
+				//pstmtInsertRelationalFact.setNull(6, Types.TIMESTAMP);
+				
+				pstmtInsertRelationalFact.setNull(5, Types.VARCHAR);
+				pstmtInsertRelationalFact.setNull(6, Types.VARCHAR);
 			}
 			
 			// insert location -- only valid ones
